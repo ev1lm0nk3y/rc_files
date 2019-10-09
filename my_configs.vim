@@ -21,6 +21,10 @@ Plugin 'c9s/helper.vim'
 Plugin 'c9s/treemenu.vim'
 Plugin 'c9s/vikube.vim'
 Plugin 'martinda/Jenkinsfile-vim-syntax'
+Plugin 'tpope/vim-fugitive'
+Plugin 'tpope/vim-surround'
+Plugin 'tpope/vim-tbone'
+Plugin 'tpope/vim-sleuth'
 
 call vundle#end()
 filetype plugin indent on
