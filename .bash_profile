@@ -70,3 +70,6 @@ export CPPFLAGS="-I/usr/local/opt/ncurses/include"
 
 # use VI keybindings on the bash prompt
 set -o vi
+
+# source the build harness variables
+[ -f ~/.build-harness ] && source ~/.build-harness
