@@ -1,9 +1,3 @@
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/ryan.shatford/google-cloud-sdk/path.bash.inc' ]; then . '/Users/ryan.shatford/google-cloud-sdk/path.bash.inc'; fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f '/Users/ryan.shatford/google-cloud-sdk/completion.bash.inc' ]; then . '/Users/ryan.shatford/google-cloud-sdk/completion.bash.inc'; fi
-
 # Add the GOROOT to PATH
 export PATH=$PATH:/usr/local/opt/go/libexec/bin:$HOME/bin:$HOME/go/bin
 export GOPATH=$HOME/go
@@ -54,12 +48,6 @@ fi
 # Get those aliases!
 if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi
 
-# Env
-export CLOUDSDK_PYTHON="/usr/local/bin/python2.7"
-
-# Krew
-export PATH=$PATH:$HOME/.krew/bin
-
 # AWS Aliases
 if [ -f ~/.aws_aliases ]; then source ~/.aws_aliases; fi
 
@@ -69,7 +57,21 @@ export LDFLAGS="-L/usr/local/opt/ncurses/lib"
 export CPPFLAGS="-I/usr/local/opt/ncurses/include"
 
 # use VI keybindings on the bash prompt
-set -o vi
+#set -o vi
 
-# source the build harness variables
-[ -f ~/.build-harness ] && source ~/.build-harness
+# vault hunter from anywhere
+export PATH="$PATH:~/git/vault-scripts"
+
+# agnoster-bash
+#export THEME=$HOME/.bash/themes/agnoster-bash/agnoster.bash
+#if [[ -f $THEME ]]; then
+#    export DEFAULT_USER=`whoami`
+#    source $THEME
+#fi
+
+if [ -f /usr/local/Cellar/minikube/1.11.0/bin/minikube ]; then
+  export PATH="${PATH}:/usr/local/Cellar/minikube/1.11.0/bin/"
+fi
+
+# Added by serverless binary installer
+export PATH="$HOME/.serverless/bin:$PATH"

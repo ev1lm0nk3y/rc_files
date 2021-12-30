@@ -1,11 +1,3 @@
-alias v=mvim
-alias k=kubectl
-alias tf=/usr/local/opt/terraform/bin/terraform
-alias gd="cd ~/git"
-alias kgp="kubectl get pods | grep"
-alias abop="adderrall && ssh bops"
-alias ls="ls -G"
-alias cat="ccat"
 alias looker="ssh 10.196.130.224"
 alias looker_log="ssh 10.196.130.224 \"sudo su looker -c \\\"chmod 644 ~/looker_new/log/looker.log\\\"\""
 alias tge="cd ~/git/clear-terragrunt/environments"
