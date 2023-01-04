@@ -9,7 +9,10 @@ call vundle#begin('~/.vim_runtime/my_plugins')
 
 Plugin 'VundleVim/Vundle.vim'
 
+" Plugin 'ervandew/supertab'
 Plugin 'Valloric/YouCompleteMe'
+Plugin 'SirVer/ultisnips'
+
 Plugin 'hashivim/vim-terraform'
 Plugin 'vim-syntastic/syntastic'
 Plugin 'juliosueiras/vim-terraform-completion'
@@ -22,14 +25,11 @@ Plugin 'sheerun/vim-polyglot'
 Plugin 'c9s/helper.vim'
 Plugin 'c9s/treemenu.vim'
 Plugin 'c9s/vikube.vim'
-Plugin 'martinda/Jenkinsfile-vim-syntax'
 Plugin 'tpope/vim-fugitive'
 Plugin 'tpope/vim-surround'
-Plugin 'tpope/vim-tbone'
-Plugin 'tpope/vim-sleuth'
-Plugin 'andrewstuart/vim-kubernetes'
 Plugin 'fatih/hclfmt'
 Plugin 'chr4/nginx.vim'
+Plugin 'preservim/tagbar'
 " Plugin 'rhadley-recurly/vim-terragrunt'
 
 " NERDTree and extensions
@@ -42,6 +42,7 @@ Plugin 'PhilRunninger/nerdtree-visual-selection'
 Plugin 'junegunn/vim-github-dashboard'
 Plugin 'kevinoid/vim-jsonc'
 
+Plugin 'easymotion/vim-easymotion'
 
 call vundle#end()
 
@@ -93,11 +94,11 @@ set statusline+=%*
 
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 0
+let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
 
 " (Optional)Remove Info(Preview) window
-"  set completeopt-=preview
+set completeopt-=preview
 
 " (Optional)Hide Info(Preview) window after completions
 autocmd CursorMovedI * if pumvisible() == 0|pclose|endif
@@ -110,17 +111,13 @@ let g:syntastic_terraform_tffilter_plan = 1
 let g:terraform_completion_keys = 1
 
 " (Optional) Default: 1, enable(1)/disable(0) terraform module registry completion
-let g:terraform_registry_module_completion = 1
+let g:terraform_registry_module_completion = 0
 
 " YAML indent control
 let g:yaml_formatter_indent_collection=1
 
-if has('gui_running')
-  set background=light
-else
-  set background=dark
-endif
-colorscheme solarized
+set background=dark
+colorscheme slate
 
 " Options
 set expandtab
@@ -129,6 +126,11 @@ set softtabstop=2
 set mouse=a
 " Fuzzy search"
 set rtp+=/usr/local/opt/fzf
+
+" disable help mapping
+nnoremap <F1> <nop>
+inoremap <F1> <nop>
+vnoremap <F1> <nop>
 
 " Kubernetes Linter
 augroup K8SLinter
@@ -148,8 +150,8 @@ augroup K8SLinter
 augroup END
 
 " Read in the SortGroup command
-if filereadable("sort_group.vim")
-  source sort_group.vim
+if filereadable("vimrcs/sort_group.vim")
+  source vimrcs/sort_group.vim
 endif
 
 let g:snipMate = { 'snippet_version': 1 }
@@ -163,4 +165,15 @@ endif
 " Go Language Server
 let g:go_def_mode='gopls'
 let g:go_info_mode='gopls'
+
+" Some YCM flags to turn of the annoying Popup hold
+" make YCM compatible with UltiSnips (using supertab)
+let g:ycm_key_list_select_completion = ['<C-n>', '<Down>', '<Tab>']
+let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
+let g:SuperTabDefaultCompletionType = '<C-n>'
+
+" better key bindings for UltiSnipsExpandTrigger
+let g:UltiSnipsExpandTrigger = "<tab>"
+let g:UltiSnipsJumpForwardTrigger = "<tab>"
+let g:UltiSnipsJumpBackwardTrigger = "<s-tab>"
 
