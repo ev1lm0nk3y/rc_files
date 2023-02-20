@@ -4,6 +4,7 @@ filetype off
 " Highlight extra whitespace
 autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
 
+set rtp+=/usr/local/opt/fzf
 set rtp+=~/.vim_runtime/my_plugins/Vundle.vim
 call vundle#begin('~/.vim_runtime/my_plugins')
 
@@ -13,25 +14,27 @@ Plugin 'VundleVim/Vundle.vim'
 Plugin 'Valloric/YouCompleteMe'
 Plugin 'SirVer/ultisnips'
 
-Plugin 'hashivim/vim-terraform'
-Plugin 'vim-syntastic/syntastic'
-Plugin 'juliosueiras/vim-terraform-completion'
-Plugin 'neoclide/coc.nvim', {'branch': 'master', 'do': 'yarn install --frozen-lockfile'}
-Plugin 'hashicorp/terraform-ls'
-Plugin 'fatih/vim-go'
-Plugin 'ctrlpvim/ctrlp.vim'
-Plugin 'tarekbecker/vim-yaml-formatter'
-Plugin 'sheerun/vim-polyglot'
+" Plugin 'rhadley-recurly/vim-terragrunt'
 Plugin 'c9s/helper.vim'
 Plugin 'c9s/treemenu.vim'
 Plugin 'c9s/vikube.vim'
+Plugin 'chr4/nginx.vim'
+Plugin 'ctrlpvim/ctrlp.vim'
+Plugin 'davidhalter/jedi-vim'
+Plugin 'fatih/hclfmt'
+Plugin 'fatih/vim-go'
+Plugin 'hashicorp/terraform-ls'
+Plugin 'hashivim/vim-terraform'
+Plugin 'juliosueiras/vim-terraform-completion'
+Plugin 'kimbo/vim-python'
+Plugin 'neoclide/coc.nvim', {'branch': 'master', 'do': 'yarn install --frozen-lockfile'}
+Plugin 'preservim/tagbar'
+Plugin 'sheerun/vim-polyglot'
+Plugin 'tarekbecker/vim-yaml-formatter'
 Plugin 'tpope/vim-fugitive'
 Plugin 'tpope/vim-surround'
-Plugin 'fatih/hclfmt'
-Plugin 'chr4/nginx.vim'
-Plugin 'preservim/tagbar'
-" Plugin 'rhadley-recurly/vim-terragrunt'
-
+Plugin 'vim-syntastic/syntastic'
+"
 " NERDTree and extensions
 Plugin 'preservim/nerdtree'
 Plugin 'Xuyuanp/nerdtree-git-plugin'

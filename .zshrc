@@ -145,3 +145,7 @@ fi
 
 autoload -U +X bashcompinit && bashcompinit
 complete -o nospace -C /usr/local/bin/vault vault
+export PATH="/usr/local/opt/ncurses/bin:$PATH"
+export PATH="/usr/local/opt/libpq/bin:$PATH"
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
