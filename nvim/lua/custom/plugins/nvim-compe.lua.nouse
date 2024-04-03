@@ -1,0 +1,22 @@
+return {
+  "hrsh7th/nvim-compe",
+  event = "InsertEnter",
+  dependencies = {
+
+  },
+  config = function()
+    require("nvim-compe").setup {
+      enabled = true,
+      autocomplete = true,
+      min_length = 2,
+      source = {
+        path = true,
+        buffer = true,
+        nvim_lsp = true,
+        nvim_lua = true,
+        luasnip = true,
+        treesitter = true,
+      }
+    }
+  end
+}

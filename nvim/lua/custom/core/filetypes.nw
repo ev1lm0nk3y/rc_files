@@ -1,0 +1,21 @@
+local re = require("regex")
+
+-- Possible template files --
+local tmplfile = {"*.html", "*.yaml"}
+
+-- Detect Go Template files --
+function DetectGoTemplate(ev)
+  local content = vim.api.nvim_buf_get_lines(ev["buf"], 0, -1, false)
+  vim.api.
+  nvim.cmd('search("{{")')
+  then
+    vim.cmd("silent! set filetype=gohtmltmpl")
+  end
+end
+
+vim.api.nvim_create_autocmd(
+  {"BufRead", "BufNewFile"}, {
+    pattern = tmplfile,
+    callback = DetectGoTemplate,
+  }
+)
