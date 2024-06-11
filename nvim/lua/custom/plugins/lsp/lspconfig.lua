@@ -131,6 +131,7 @@ return {
     lspconfig["terraformls"].setup({
       capabilities = capabilities,
       on_attach = on_attach,
+      filetypes = { "terraform" },
       settings = {
         terraformls = {
           initializationOptions = {
@@ -153,10 +154,12 @@ return {
     lspconfig["yamlls"].setup({
       capabilities = capabilities,
       on_attach = on_attach,
+      filetypes = { "yaml" },
       settings = {
         schemas = {
-          ["https://raw.githubusercontent.com/instrumenta/kubernetes-json-schema/master/v1.28.0-standalone-strict/all.json"] = "/*.yaml",
-          ["https://json.schemastore.org/github-workflow.json"] = "/.github/workflows/*",
+          ["https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.0/schema.yaml"] = "/*",
+          -- ["https://raw.githubusercontent.com/instrumenta/kubernetes-json-schema/master/v1.28.0-standalone-strict/all.json"] = "/*.yaml",
+          -- ["https://json.schemastore.org/github-workflow.json"] = "/.github/workflows/*",
         },
       },
     })
