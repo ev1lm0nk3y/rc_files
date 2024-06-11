@@ -5,23 +5,21 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-# If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:/usr/local/bin:$PATH
+export PATH="${HOME}/bin:${HOME}/go/bin:${PATH}"
 
 # Path to your oh-my-zsh installation.
-export ZSH="/Users/ryan.shatford/.oh-my-zsh"
+export ZSH="$HOME/.oh-my-zsh"
 
-# Set name of the theme to load --- if set to "random", it will
-# load a random theme each time oh-my-zsh is loaded, in which case,
-# to know which specific one was loaded, run: echo $RANDOM_THEME
-# See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-# ZSH_THEME="random"
+ZSH_THEME="powerlevel10k/powerlevel10k"
+# # Homebrew completions
+if type brew &>/dev/null; then
+  FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
 
-# Set list of themes to pick from when loading at random
-# Setting this variable when ZSH_THEME=random will cause zsh to load
-# a theme from this variable instead of looking in $ZSH/themes/
-# If set to an empty array, this variable will have no effect.
-# ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
+  autoload -Uz compinit
+  compinit
+fi
+
+[ -d ${HOME}/.oh-my-zsh/completions ] && FPATH=${HOME}/.oh-my-zsh/completions:$FPATH
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
@@ -54,12 +52,12 @@ export ZSH="/Users/ryan.shatford/.oh-my-zsh"
 # You can also set it to another string to have that shown instead of the default red dots.
 # e.g. COMPLETION_WAITING_DOTS="%F{yellow}waiting...%f"
 # Caution: this setting can cause issues with multiline prompts in zsh < 5.7.1 (see #5765)
-COMPLETION_WAITING_DOTS="true"
+# COMPLETION_WAITING_DOTS="true"
 
 # Uncomment the following line if you want to disable marking untracked files
 # under VCS as dirty. This makes repository status check for large repositories
 # much, much faster.
-DISABLE_UNTRACKED_FILES_DIRTY="true"
+# DISABLE_UNTRACKED_FILES_DIRTY="true"
 
 # Uncomment the following line if you want to change the command execution time
 # stamp shown in the history command output.
@@ -77,75 +75,99 @@ DISABLE_UNTRACKED_FILES_DIRTY="true"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(aws colored-man-pages colorize common-aliases fzf git git-extras jira kube-ps1 tmux virtualenv zsh-navigation-tools zsh-kubectl-prompt zsh-syntax-highlighting)
+plugins=(colorize common-aliases git git-extras fzf kubectl terraform vi-mode zsh-autosuggestions zsh-navigation-tools zsh-syntax-highlighting)
 
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
-export PATH=${HOME}/bin:${HOME}/go/bin:${PATH}
+export HOMEBREW_NO_ENV_HINTS=true
 
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
 
+# neovim remote setup
+if [ -n "$NVIM_LISTEN_ADDRESS" ]; then
+    alias nvim=nvr -cc split --remote-wait +'set bufhidden=wipe'
+fi
+
 # Preferred editor for local and remote sessions
-#if [[ -n $SSH_CONNECTION ]]; then
-#  export EDITOR='vim'
-#else
-#  export EDITOR='vim'
-#fi
+export EDITOR='nvim'
+if [ -n "$NVIM_LISTEN_ADDRESS" ]; then
+    export VISUAL="nvr -cc split --remote-wait +'set bufhidden=wipe'"
+    export EDITOR="nvr -cc split --remote-wait +'set bufhidden=wipe'"
+else
+    export VISUAL="nvim"
+    export EDITOR="nvim"
+fi
+
+if [[ -n $SSH_CONNECTION ]]; then
+   export EDITOR='vim'
+fi
+
+# GOPATH
+export GOPATH="${HOME}/go"
 
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
+
+# Completions
+autoload -U compinit && compinit
+
+compdef k="kubectl"
+compdef tf="terraform"
+
+# GCloud things
+source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
+source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
 
 # Set personal aliases, overriding those provided by oh-my-zsh libs,
 # plugins, and themes. Aliases can be placed here, though oh-my-zsh
 # users are encouraged to define aliases within the ZSH_CUSTOM folder.
 # For a full list of active aliases, run `alias`.
-#
-# Example aliases
-if [[ -f ${HOME}/.bash_aliases ]]; then
-  source ${HOME}/.bash_aliases
-fi
-
-if [[ -f ${HOME}/.aws_aliases ]]; then
-  source ${HOME}/.aws_aliases
-fi
-
-if [[ -f ${HOME}/.clear_aliases ]]; then
-  source ${HOME}/.clear_aliases
-fi
-
-export FPath="$FPath:${HOME}/bin:${HOME}/bin/kubeokta"
-
-alias zshconfig="source ~/.zshrc"
-alias ohmyzsh="source ~/.oh-my-zsh"
-
-# Get completions even when you use short aliases
-compdef g=git
-compdef k=kubectl
-
-# Personal PS1 to use with zsh for k8s and git status
-# echo -e -n "\x1b[\x35 q" # Blinking vertical line
-#source ~/.oh-my-zsh/plugins/zsh-git-prompt/zshrc.sh
-ZSH_THEME_GIT_PROMPT_CACHE=true
-export PATH="/usr/local/opt/libpq/bin:$PATH:${HOME}/.krew/bin"
+alias zshconfig="nvim ~/.zshrc && . ~/.zshrc"
+alias ohmyzsh="nvim ~/.oh-my-zsh"
+alias v="nvr --remote-wait"
+alias n="nvr --remote-wait"
+alias k="kubectl"
+alias tf="terraform"
+alias vim="nvim"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-ZSH_THEME="powerlevel10k/powerlevel10k"
-if [[ -f ${HOME}/.p10k.zsh ]]; then
-  source ~/.p10k.zsh
-fi
-
-#test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
-
-# Do this last
-#. ${HOME}/.zshrc
-
-autoload -U +X bashcompinit && bashcompinit
-complete -o nospace -C /usr/local/bin/vault vault
-export PATH="/usr/local/opt/ncurses/bin:$PATH"
-export PATH="/usr/local/opt/libpq/bin:$PATH"
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+setopt autopushd
+setopt pushdignoredups
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/opt/anaconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/opt/anaconda3/etc/profile.d/conda.sh" ]; then
+        . "/opt/anaconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/opt/anaconda3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+
+# ruby and other tooling set up
+eval "$(rbenv init - zsh)"
+eval "$(direnv hook zsh)"
+
+# export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
+export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+#export BASHMATIC_HOME="/Users/ryan/.bashmatic"
+#[[ -f ${BASHMATIC_HOME}/init.sh ]] && source ${BASHMATIC_HOME}/init.sh
+#export PATH="${PATH}:${BASHMATIC_HOME}/bin"
+export PATH="/opt/homebrew/opt/curl/bin:$PATH"
+export PATH="${PATH}:/Users/ryan/Library/Python/3.11/bin"
+
+# Created by `pipx` on 2024-05-16 07:24:46
+export PATH="$PATH:/Users/ryan/.local/bin"
