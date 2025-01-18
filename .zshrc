@@ -30,11 +30,11 @@ fi
 
 # Uncomment one of the following lines to change the auto-update behavior
 # zstyle ':omz:update' mode disabled  # disable automatic updates
-# zstyle ':omz:update' mode auto      # update automatically without asking
+zstyle ':omz:update' mode auto      # update automatically without asking
 # zstyle ':omz:update' mode reminder  # just remind me to update when it's time
 
 # Uncomment the following line to change how often to auto-update (in days).
-# zstyle ':omz:update' frequency 13
+zstyle ':omz:update' frequency 13
 
 # Uncomment the following line if pasting URLs and other text is messed up.
 # DISABLE_MAGIC_FUNCTIONS="true"
@@ -65,7 +65,7 @@ fi
 # "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
 # or set a custom format using the strftime function format specifications,
 # see 'man strftime' for details.
-# HIST_STAMPS="mm/dd/yyyy"
+HIST_STAMPS="yyyy-mm-dd"
 
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
@@ -75,7 +75,7 @@ fi
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(colorize common-aliases git git-extras fzf kubectl terraform vi-mode zsh-autosuggestions zsh-navigation-tools zsh-syntax-highlighting)
+plugins=(colorize common-aliases git git-extras fzf kubectl terraform vi-mode zsh-navigation-tools)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -117,10 +117,13 @@ autoload -U compinit && compinit
 
 compdef k="kubectl"
 compdef tf="terraform"
+compdef a="aws"
 
 # GCloud things
 source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
 source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
+
+[ -e "${HOME}/bin/alembic-ssh" ] && source "${HOME}/bin/alembic-ssh"
 
 # Set personal aliases, overriding those provided by oh-my-zsh libs,
 # plugins, and themes. Aliases can be placed here, though oh-my-zsh
@@ -128,11 +131,24 @@ source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
 # For a full list of active aliases, run `alias`.
 alias zshconfig="nvim ~/.zshrc && . ~/.zshrc"
 alias ohmyzsh="nvim ~/.oh-my-zsh"
-alias v="nvr --remote-wait"
+alias v="nvim"
 alias n="nvr --remote-wait"
 alias k="kubectl"
-alias tf="terraform"
+alias kx="kubectx"
+alias kn="kubens"
 alias vim="nvim"
+alias ca="cd ~/src/alembic/${1}"
+alias sp="ssh -fNq -D 1080 bastion.production.getalembic.com"
+alias ss="ssh -fNq -D 1081 bastion.staging.getalembic.com"
+alias sd="ssh -fNq -D 1082 bastion.dc2.getalembic.com"
+alias less="less --use-color --mouse -F -L -Q"
+alias asl="aws sso login"
+alias pg="pgrep -fl"
+
+# https://github.com/ahmetb/kubectl-aliases?tab=readme-ov-file
+[ -f ${HOME}/.kubectl_aliases ] && source ${HOME}/.kubectl_aliases
+
+eval $(thefuck --alias)
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
@@ -144,22 +160,22 @@ setopt pushdignoredups
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/opt/anaconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+__conda_setup="$('/Users/ryanshatford/anaconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
 if [ $? -eq 0 ]; then
     eval "$__conda_setup"
 else
-    if [ -f "/opt/anaconda3/etc/profile.d/conda.sh" ]; then
-        . "/opt/anaconda3/etc/profile.d/conda.sh"
+    if [ -f "/Users/ryanshatford/anaconda3/etc/profile.d/conda.sh" ]; then
+        . "/Users/ryanshatford/anaconda3/etc/profile.d/conda.sh"
     else
-        export PATH="/opt/anaconda3/bin:$PATH"
+        export PATH="/Users/ryanshatford/anaconda3/bin:$PATH"
     fi
 fi
 unset __conda_setup
 # <<< conda initialize <<<
 
 # ruby and other tooling set up
-eval "$(rbenv init - zsh)"
-eval "$(direnv hook zsh)"
+#eval "$(rbenv init - zsh)"
+#eval "$(direnv hook zsh)"
 
 # export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
@@ -167,7 +183,56 @@ export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 #[[ -f ${BASHMATIC_HOME}/init.sh ]] && source ${BASHMATIC_HOME}/init.sh
 #export PATH="${PATH}:${BASHMATIC_HOME}/bin"
 export PATH="/opt/homebrew/opt/curl/bin:$PATH"
-export PATH="${PATH}:/Users/ryan/Library/Python/3.11/bin"
+export PATH="${PATH}:/Users/ryanshatford/Library/Python/3.11/bin"
 
 # Created by `pipx` on 2024-05-16 07:24:46
-export PATH="$PATH:/Users/ryan/.local/bin"
+export PATH="$PATH:/Users/ryanshatford/.local/bin"
+export PATH="/opt/homebrew/opt/curl/bin:$PATH"
+
+# nvm setup
+export NVM_DIR="$HOME/.nvm"
+[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
+[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
+
+# Created by `pipx` on 2024-06-12 20:49:17
+export PATH="/Users/ryanshatford/.cargo/bin:/Users/ryanshatford/.local/bin:$PATH"
+###-begin-pm2-completion-###
+### credits to npm for the completion file model
+#
+# Installation: pm2 completion >> ~/.bashrc  (or ~/.zshrc)
+#
+
+COMP_WORDBREAKS=${COMP_WORDBREAKS/=/}
+COMP_WORDBREAKS=${COMP_WORDBREAKS/@/}
+export COMP_WORDBREAKS
+
+if type complete &>/dev/null; then
+  _pm2_completion () {
+    local si="$IFS"
+    IFS=$'\n' COMPREPLY=($(COMP_CWORD="$COMP_CWORD" \
+                           COMP_LINE="$COMP_LINE" \
+                           COMP_POINT="$COMP_POINT" \
+                           pm2 completion -- "${COMP_WORDS[@]}" \
+                           2>/dev/null)) || return $?
+    IFS="$si"
+  }
+  complete -o default -F _pm2_completion pm2
+elif type compctl &>/dev/null; then
+  _pm2_completion () {
+    local cword line point words si
+    read -Ac words
+    read -cn cword
+    let cword-=1
+    read -l line
+    read -ln point
+    si="$IFS"
+    IFS=$'\n' reply=($(COMP_CWORD="$cword" \
+                       COMP_LINE="$line" \
+                       COMP_POINT="$point" \
+                       pm2 completion -- "${words[@]}" \
+                       2>/dev/null)) || return $?
+    IFS="$si"
+  }
+  compctl -K _pm2_completion + -f + pm2
+fi
+###-end-pm2-completion-###

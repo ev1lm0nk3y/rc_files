@@ -17,7 +17,9 @@ require("lazy").setup({
   {import = "custom.plugins.lsp"},
 }, {
   install = {
-    colorscheme = { "NeoSolarized" },
+    colorscheme = {
+      "NeoSolarized",
+    },
   },
   checker = {
     enabled = true,

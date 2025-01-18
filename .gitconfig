@@ -1,52 +1,72 @@
 [user]
-  email = evilmonkey@gmail.com
-  name = Ryan Shatford
-	signingkey = 93967C430D7166708713D55C9E49F0D71700C9E3
+	email = ev1lm0nk3y@users.noreply.github.com
+	name = Ryan
 [diff]
-  tool = nvr
-[difftool "nvr"]
-  cmd = nvr -s -d $LOCAL $REMOTE
+  tool = less
+[difftool "less"]
+  cmd = colorize_less
 [merge]
-  tool = nvr
-[mergetool "nvr"]
-  cmd = nvr --remote-tab-silent -d $LOCAL $BASE $REMOTE $MERGED -c 'wincmd J | wincmd ='
+  tool = nvim
+  ff = only
+[mergetool "nvimdiff"]
+  layout = "(LOCAL,BASE,REMOTE)/MERGED"
+[git]
+  lineNumber = true
+  column = true
 [alias]
   # one-line log
-  l = log --pretty=format:"%C(yellow)%h\\ %ad%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --date=short
+  l = log --pretty=format:"%C(yellow)%h\\ %ad%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --date=short --graph
 
   a = add
-  ac = !git add . && git commit -am
+  ac = "!git add . && git commit -am"
   ap = add -p
+
   c = commit --verbose
   ca = commit -a --verbose
   cm = commit -m
   cam = commit -a -m
   m = commit --amend --verbose
   can = commit --amend --no-edit
+  cap = "!git comming --amend --no-edit && git push origin --force"
 
   p = push
   po = push --set-upstream origin
-  pl = pull
-  plo = pull origin main
-  plom = pull origin master
+  pof = "!git commit --amend --no-edit $(git rev-parse --show-toplevel) && git push origin --force"
+
+  pl = pull --ff
+  plo = pull --ff origin main
+  plom = pull --ff origin master
     
   df = diff
   ds = diff --stat
   dc = diff --cached
 
+  root = rev-parse --show-toplevel
+
+  s = status -s --ignore-submodules
   st = stash
   stp = stash pop
   stl = stash list
+  std = stash drop
 
-  s = status -s
   co = checkout
   cb = checkout -b
-  br = branch
+  com = "!git co main && git pl"
+  cos = "!git co staging && git pl"
+
+  br = branch --sort=-creatordate
   # list branches sorted by last modified
   b = "!git for-each-ref --sort='-authordate' --format='%(authordate)%09%(objectname:short)%09%(refname)' refs/heads | sed -e 's-refs/heads/--'"
 
   # list aliases
   la = "!git config -l | grep alias | cut -c 7-"
+
+  # rebase quick commands
+  ra = rebase --abort
+  rc = rebase --continue
+  rs = rebase --skip
+  ru = "!git status -s --ignore-submodules | grep -E \"^ [DAU]U \" | awk '{print $2}'"
+
 [pull]
 	rebase = true
 [filter "lfs"]
@@ -57,4 +77,12 @@
 [init]
 	defaultBranch = main
 [core]
-	editor = nvr --remote-wait-silent
+	editor = nvim
+  pager = less
+[pager]
+  cmd = "less -LFQm --use-color"
+[pack]
+	windowMemory = 100m
+	packSizeLimit = 100m
+	threads = 1
+	deltaCacheSize = 512m

@@ -60,7 +60,9 @@ return {
     end
 
     -- used to enable autocompletion (assign to every lsp server config)
-    local capabilities = cmp_nvim_lsp.default_capabilities()
+    local capabilities = cmp_nvim_lsp.default_capabilities(vim.lsp.protocol.make_client_capabilities())
+
+    vim.lsp.set_log_level("error")
 
     -- Change the Diagnostic symbols in the sign column (gutter)
     -- (not in youtube nvim video)
@@ -71,7 +73,7 @@ return {
     end
 
     -- configure typescript server with plugin
-    lspconfig["tsserver"].setup({
+    lspconfig["ts_ls"].setup({
       capabilities = capabilities,
       on_attach = on_attach,
     })
@@ -81,6 +83,22 @@ return {
       capabilities = capabilities,
       on_attach = on_attach,
       filetypes = { "graphql", "gql", "svelte", "typescriptreact", "javascriptreact" },
+    })
+
+    -- configure Dockerfile language server
+    lspconfig["dockerls"].setup({
+      capabilities = capabilities,
+      on_attach = on_attach,
+      filetypes = { "dockerfile" },
+      settings = {
+        root_dir = {'Dockerfile', 'Dockerfile.*'},
+      },
+    })
+    vim.api.nvim_create_autocmd({"BufWritePre"}, {
+      pattern = {"Dockerfile*"},
+      callback = function()
+        vim.lsp.buf.format()
+      end,
     })
 
     -- configure python server
@@ -96,8 +114,12 @@ return {
             useLibraryCodeForTypes = true
           }
         }
-      }
+      },
     })
+--    vim.api.nvim_create_autocmd({"BufWritePre"}, {
+--      pattern = { "*.py" },
+--      callback = vim.cmd.Black()
+--    })
 
 --    lspconfig["pylsp"].setup({
 --      capabilities = capabilities,
@@ -119,6 +141,7 @@ return {
       capabilities = capabilities,
       filetypes = { "python" },
       on_attach = on_attach,
+      cmd = { 'jedi-language-server' },
     })
 
     -- configure Helm server
@@ -131,6 +154,9 @@ return {
     lspconfig["terraformls"].setup({
       capabilities = capabilities,
       on_attach = on_attach,
+      on_init = function(client)
+        client.notify("workspace/didChangeConfiguration", { settings = { ["terraform"] = { format = { command = "terraform fmt -", args = { "%file%" } } } } })
+      end,
       filetypes = { "terraform" },
       settings = {
         terraformls = {
@@ -143,9 +169,10 @@ return {
         }
       }
     })
-    vim.api.nvim_create_autocmd({"BufWritePre"}, {
+    vim.api.nvim_create_autocmd({"BufWritePre", "BufNewFile"}, {
       pattern = {"*.tf", "*.tfvars"},
       callback = function()
+        vim.filetype = "terraform"
         vim.lsp.buf.format()
       end,
     })
@@ -156,10 +183,12 @@ return {
       on_attach = on_attach,
       filetypes = { "yaml" },
       settings = {
-        schemas = {
-          ["https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.0/schema.yaml"] = "/*",
-          -- ["https://raw.githubusercontent.com/instrumenta/kubernetes-json-schema/master/v1.28.0-standalone-strict/all.json"] = "/*.yaml",
-          -- ["https://json.schemastore.org/github-workflow.json"] = "/.github/workflows/*",
+        yaml = {
+          format = {
+            enable = true,
+            proseWrap = "always",
+          },
+          completion = true,
         },
       },
     })
@@ -220,6 +249,26 @@ return {
        end
        vim.lsp.buf.format({async = false})
       end
+    })
+
+    -- configure jinja server
+    vim.filetype.add {
+      extension = {
+        jinja = 'jinja',
+        jinja2 = 'jinja',
+        j2 = 'jinja',
+      },
+    }
+    lspconfig['jinja-lsp'].setup({
+      capabilities = capabilities,
+      on_attach = on_attach,
+      filetypes = { 'jinja', 'rust' },
+      cmd = { 'jinja-lsp' },
+      settings = {
+        root_dir = function(fname)
+          return lspconfig.util.find_git_ancestor(fname) or vim.fn.getcwd()
+        end,
+      },
     })
   end,
 }

@@ -6,10 +6,10 @@ return {
     { "nvim-telescope/telescope.lua" },
   },
   schemas = {
-    kubernetes = "*.yaml",
+    kubernetes = "*.{yaml,yml}",
     {
-      name = "Kubernetes 1.28.0",
-      uri = "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.28.0-standalone-strict/all.json",
+      name = "Kubernetes 1.31.0",
+      uri = "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.31.0-standalone-strict/all.json",
     },
     ["http://json.schemastore.org/github-workflow"] = ".github/workflows/*",
     ["http://json.schemastore.org/github-action"] = ".github/action.{yml,yaml}",
