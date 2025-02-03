@@ -1,0 +1,4 @@
+result=( ${(Q)"${(z)$(<<\EO:result
+'ubuntu/nginx' 'ubuntu/squid' 'ubuntu/cortex' 'ubuntu/kafka' 'ubuntu/apache2' 'ubuntu/prometheus' 'ubuntu/bind9' 'ubuntu/zookeeper' 'ubuntu/mysql' 'ubuntu/postgres' 'ubuntu/redis' 'ubuntu/jre' 'ubuntu/dotnet-aspnet' 'ubuntu/grafana' 'ubuntu/memcached' 'ubuntu/prometheus-alertmanager' 'ubuntu/dotnet-deps' 'ubuntu/cassandra' 'ubuntu/dotnet-runtime' 'ubuntu/python' 'ubuntu/telegraf' 'ubuntu/mlflow' 'ubuntu/loki' 'bubuntux/nordvpn' 'ubuntu/chiselled-jre'
+EO:result
+)}"} )

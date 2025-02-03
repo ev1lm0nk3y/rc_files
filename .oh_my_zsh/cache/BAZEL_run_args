@@ -1,0 +1,1 @@
+_bazel_run_args='*::label-bin:_bazel_complete_target_label_bin'

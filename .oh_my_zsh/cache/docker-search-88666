@@ -1,0 +1,4 @@
+result=( ${(Q)"${(z)$(<<\EO:result
+'88866666/guess' '8886661333/aravind' 'gzh888666/caizhi123' 'wyz88666/httpd' 'p88688666/kube-apiserver' 'wyz88666/ubuntu' 'zyl888666/nginx' 'p88688666/dashboard' 'p88688666/kube-proxy' 'p88688666/flannel' 'p88688666/kiali' 'p88688666/kube-controller-manager' 'p88688666/etcd' 'p88688666/coredns' 'p88688666/pause' 'p88688666/kube-scheduler' 'wyz88666/test' 'blank888666/binance-trading-app' 'hareesh88666/spring-boot-mongo' 'hareesh88666/java-web-app' 'hareesh88666/java-web-app-docker' 'liuchao888666/java-demo' '5351888666/book-mysql-0.1' '5351888666/book-mysql-latest' 'alex1488666/docker101tutorial'
+EO:result
+)}"} )
