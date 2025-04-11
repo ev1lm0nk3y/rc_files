@@ -5,7 +5,7 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-export PATH="${HOME}/bin:${HOME}/go/bin:${PATH}"
+export PATH="${HOME}/bin:${HOME}/go/bin:/opt/homebrew/bin:/opt/homebrew/Cellar:${PATH}"
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
@@ -103,7 +103,7 @@ else
 fi
 
 if [[ -n $SSH_CONNECTION ]]; then
-   export EDITOR='vim'
+   export EDITOR='nvim'
 fi
 
 # GOPATH
@@ -123,36 +123,7 @@ compdef a="aws"
 source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
 source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
 
-[ -e "${HOME}/bin/alembic-ssh" ] && source "${HOME}/bin/alembic-ssh"
-
-# Set personal aliases, overriding those provided by oh-my-zsh libs,
-# plugins, and themes. Aliases can be placed here, though oh-my-zsh
-# users are encouraged to define aliases within the ZSH_CUSTOM folder.
-# For a full list of active aliases, run `alias`.
-alias zshconfig="nvim ~/.zshrc && . ~/.zshrc"
-alias ohmyzsh="nvim ~/.oh-my-zsh"
-alias v="nvim"
-alias n="nvr --remote-wait"
-alias k="kubectl"
-alias kx="kubectx"
-alias kn="kubens"
-alias vim="nvim"
-alias ca="cd ~/src/alembic/${1}"
-alias sp="ssh -fNq -D 1080 bastion.production.getalembic.com"
-alias ss="ssh -fNq -D 1081 bastion.staging.getalembic.com"
-alias sd="ssh -fNq -D 1082 bastion.dc2.getalembic.com"
-alias less="less --use-color --mouse -F -L -Q"
-alias asl="aws sso login"
-alias pg="pgrep -fl"
-
-# https://github.com/ahmetb/kubectl-aliases?tab=readme-ov-file
-[ -f ${HOME}/.kubectl_aliases ] && source ${HOME}/.kubectl_aliases
-
-eval $(thefuck --alias)
-
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 setopt autopushd
@@ -173,21 +144,12 @@ fi
 unset __conda_setup
 # <<< conda initialize <<<
 
-# ruby and other tooling set up
-#eval "$(rbenv init - zsh)"
-#eval "$(direnv hook zsh)"
-
-# export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
-#export BASHMATIC_HOME="/Users/ryan/.bashmatic"
-#[[ -f ${BASHMATIC_HOME}/init.sh ]] && source ${BASHMATIC_HOME}/init.sh
-#export PATH="${PATH}:${BASHMATIC_HOME}/bin"
 export PATH="/opt/homebrew/opt/curl/bin:$PATH"
-export PATH="${PATH}:/Users/ryanshatford/Library/Python/3.11/bin"
 
 # Created by `pipx` on 2024-05-16 07:24:46
 export PATH="$PATH:/Users/ryanshatford/.local/bin"
-export PATH="/opt/homebrew/opt/curl/bin:$PATH"
+export PATH="/opt/homebrew/bin:$PATH"
 
 # nvm setup
 export NVM_DIR="$HOME/.nvm"
@@ -196,43 +158,7 @@ export NVM_DIR="$HOME/.nvm"
 
 # Created by `pipx` on 2024-06-12 20:49:17
 export PATH="/Users/ryanshatford/.cargo/bin:/Users/ryanshatford/.local/bin:$PATH"
-###-begin-pm2-completion-###
-### credits to npm for the completion file model
-#
-# Installation: pm2 completion >> ~/.bashrc  (or ~/.zshrc)
-#
 
-COMP_WORDBREAKS=${COMP_WORDBREAKS/=/}
-COMP_WORDBREAKS=${COMP_WORDBREAKS/@/}
-export COMP_WORDBREAKS
-
-if type complete &>/dev/null; then
-  _pm2_completion () {
-    local si="$IFS"
-    IFS=$'\n' COMPREPLY=($(COMP_CWORD="$COMP_CWORD" \
-                           COMP_LINE="$COMP_LINE" \
-                           COMP_POINT="$COMP_POINT" \
-                           pm2 completion -- "${COMP_WORDS[@]}" \
-                           2>/dev/null)) || return $?
-    IFS="$si"
-  }
-  complete -o default -F _pm2_completion pm2
-elif type compctl &>/dev/null; then
-  _pm2_completion () {
-    local cword line point words si
-    read -Ac words
-    read -cn cword
-    let cword-=1
-    read -l line
-    read -ln point
-    si="$IFS"
-    IFS=$'\n' reply=($(COMP_CWORD="$cword" \
-                       COMP_LINE="$line" \
-                       COMP_POINT="$point" \
-                       pm2 completion -- "${words[@]}" \
-                       2>/dev/null)) || return $?
-    IFS="$si"
-  }
-  compctl -K _pm2_completion + -f + pm2
-fi
-###-end-pm2-completion-###
+## Custom functions
+[ -s "${HOME}/bin/functions" ] && source ${HOME}/bin/functions
+#eval $(git config -l | grep alias | sed -e 's/^alias\./alias g/;s/=/="/;s/$/"/')

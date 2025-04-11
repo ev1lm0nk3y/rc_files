@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+function _idx {
+  printf %02d ${1}
+}
+
+function dgx {
+  [ -z ${1} ] && echo "usage: dgx <dgx host num>" && return
+  dgx_idx=$(_idx ${1})
+  ssh dgx-${dgx_idx}.in.production.dc2.alb 
+}
+
+function dgx-send {
+  [ -z ${1} ] && echo "usage: dgx-send <dgx host num> <src> [<dst>]" && return
+  dgx_idx=$(_idx ${1})
+  dgx_path="${3:-~/}"
+  scp "${2}" "dgx-${dgx_idx}.in.production.dc2.alb:${dgx_path}"
+}
+
+function dgx-get {
+  [ -z ${1} ] && echo "usage: dgx-get <dgx host num> <src> [<dst>]" && return
+  dgx_idx=$(_idx ${1})
+  dst_path="${3:-.}"
+  scp "dgx-${dgx_idx}.in.production.dc2.alb:${src_path}" "${dst_path}"
+}
+
+function ssa {
+  [ -z ${1} ] && echo "usage: ssa <hostname> [s]" && return
+  d="dc1.alb"
+  env="${2}"
+  if [[ "${env}" == "prod" ]]; then
+    env="production"
+  fi
+  ssh ${1}.${env}.${d}
+}
