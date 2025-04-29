@@ -1,6 +1,6 @@
 [user]
 	email = ev1lm0nk3y@users.noreply.github.com
-	name = Ryan
+	name = Ryan Shatford
 [diff]
   tool = less
 [difftool "less"]
@@ -13,6 +13,8 @@
 [git]
   lineNumber = true
   column = true
+[push]
+  autoSetupRemote = true
 [alias]
   # one-line log
   l = log --pretty=format:"%C(yellow)%h\\ %ad%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --date=short --graph
@@ -27,11 +29,10 @@
   cam = commit -a -m
   m = commit --amend --verbose
   can = commit --amend --no-edit
-  cap = "!git comming --amend --no-edit && git push origin --force"
 
   p = push
   po = push --set-upstream origin
-  pof = "!git commit --amend --no-edit $(git rev-parse --show-toplevel) && git push origin --force"
+  pof = "!git can $(git rev-parse --show-toplevel) && git push origin --force"
 
   pl = pull --ff
   plo = pull --ff origin main
@@ -68,21 +69,21 @@
   ru = "!git status -s --ignore-submodules | grep -E \"^ [DAU]U \" | awk '{print $2}'"
 
 [pull]
-	rebase = true
+ 	rebase = true
+  ff = true
 [filter "lfs"]
-	required = true
-	clean = git-lfs clean -- %f
-	smudge = git-lfs smudge -- %f
-	process = git-lfs filter-process
+ 	required = true
+ 	clean = git-lfs clean -- %f
+ 	smudge = git-lfs smudge -- %f
+ 	process = git-lfs filter-process
 [init]
-	defaultBranch = main
+ 	defaultBranch = main
 [core]
-	editor = nvim
-  pager = less
+ 	editor = nvim
 [pager]
   cmd = "less -LFQm --use-color"
 [pack]
-	windowMemory = 100m
-	packSizeLimit = 100m
-	threads = 1
-	deltaCacheSize = 512m
+ 	windowMemory = 100m
+ 	packSizeLimit = 100m
+ 	threads = 1
+ 	deltaCacheSize = 512m

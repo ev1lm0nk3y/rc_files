@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+[ $(uname) = "Linux" ] && apt update && apt upgrade -y && export PKGMGR=apt
+[ $(uname) = "Darwin" ] && \
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" && \
+  export PKGMGR=brew
+
+define -A packages
+packages=(
+  "bat"
+  "fzf"
+  "jq"
+  "pipx"
+  "ripgrep"
+  "tmux"
+  "tree"
+  "wget"
+)
+
+if [ -z "${PKGMGR}" ]; then
+  echo "Unsupported OS. Please install Homebrew or apt."
+  exit 1
+elif [ "${PKGMGR}" = "apt" ]; then
+  sudo "${PKGMGR}" install -y "${packages[@]}" || {
+    echo "Failed to install some packages with ${PKGMGR}."
+  }
+elif [ "${PKGMGR}" = "brew" ]; then
+  ${PKGMGR} install "${packages[@]}" || {
+    echo "Failed to install some packages with ${PKGMGR}."
+  }
+fi
+
+git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
+source ~/.zshrc
+
+define -A pipx_installs
+pipx_installs=(
+  "pre-commit"
+  "detect-secrets"
+)
+
+pipx install "${pipx_installs[@]}"
+echo "Ensuring workspace id ${DEVPOD_WORKSPACE_ID} is protected by detect-secrets"
+[ -f "/workspaces/${DEVPOD_WORKSPACE_ID}/.pre-commit-config.yaml" ] || \
+  cp /home/vscode/dotfiles/.pre-commit-config.yaml /workspaces/${DEVPOD_WORKSPACE_ID}
+pre-commit autoupdate && pre-commit install --install-hooks
+[ -f "/workspaces/${DEVPOD_WORKSPACE_ID}/.secrets.baseline" ] || \
+  detect-secrets scan --all-files > /workspaces/${DEVPOD_WORKSPACE_ID}/.secrets.baseline
+

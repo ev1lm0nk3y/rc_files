@@ -4,6 +4,7 @@
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
+[ -f ~/.p10k.zsh ] || source ~/.p10k.zsh
 
 export PATH="${HOME}/bin:${HOME}/go/bin:/opt/homebrew/bin:/opt/homebrew/Cellar:${PATH}"
 
@@ -14,7 +15,6 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # # Homebrew completions
 if type brew &>/dev/null; then
   FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
-
   autoload -Uz compinit
   compinit
 fi
@@ -75,14 +75,17 @@ HIST_STAMPS="yyyy-mm-dd"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(colorize common-aliases git git-extras fzf kubectl terraform vi-mode zsh-navigation-tools)
+EXTRA_PLUGINS=""
+[ which terraform &>/dev/null ] && EXTRA_PLUGINS="${EXTRA_PLUGINS} terraform"
+[ which kubectl &>/dev/null ] && EXTRA_PLUGINS="${EXTRA_PLUGINS} kubectl"
+plugins=(colorize common-aliases git git-extras fzf vi-mode zsh-navigation-tools ${EXTRA_PLUGINS})
 
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
-export HOMEBREW_NO_ENV_HINTS=true
+[ which brew &>/dev/null ] && export HAS_BREW=1
 
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
@@ -115,15 +118,34 @@ export GOPATH="${HOME}/go"
 # Completions
 autoload -U compinit && compinit
 
-compdef k="kubectl"
-compdef tf="terraform"
-compdef a="aws"
+[ $EXTRA_PLUGINS =~ "kubectl" ] && compdef k="kubectl"
+[ $EXTRA_PLUGINS =~ "terraform" ] && compdef tf="terraform"
+[ which aws &>/dev/null ] && compdef a="aws"
 
 # GCloud things
-source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
-source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
+if [[ $HAS_BREW = "1" ]]; then
+  export HOMEBREW_NO_ENV_HINTS=true
+  export PATH="/opt/homebrew/opt/curl/bin:$PATH"
 
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+  # Created by `pipx` on 2024-05-16 07:24:46
+  export PATH="$PATH:/Users/ryanshatford/.local/bin"
+  export PATH="/opt/homebrew/bin:$PATH"
+
+  [ -f "$(brew --prefix)/bin/kubectl-krew" ] && export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+
+  # nvm setup
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
+  [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
+
+  if [ -f "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc" ]; then
+    export CLOUDSDK_PYTHON_SITEPACKAGES=1
+    export CLOUDSDK_PYTHON="$(brew --prefix)/opt/python@3.11/bin/python3"
+    export CLOUDSDK_ACTIVE_CONFIG_NAME="default"
+    source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
+    source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
+  fi
+
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 setopt autopushd
@@ -144,21 +166,10 @@ fi
 unset __conda_setup
 # <<< conda initialize <<<
 
-export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
-export PATH="/opt/homebrew/opt/curl/bin:$PATH"
-
-# Created by `pipx` on 2024-05-16 07:24:46
-export PATH="$PATH:/Users/ryanshatford/.local/bin"
-export PATH="/opt/homebrew/bin:$PATH"
-
-# nvm setup
-export NVM_DIR="$HOME/.nvm"
-[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
-[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
-
-# Created by `pipx` on 2024-06-12 20:49:17
 export PATH="/Users/ryanshatford/.cargo/bin:/Users/ryanshatford/.local/bin:$PATH"
 
 ## Custom functions
 [ -s "${HOME}/bin/functions" ] && source ${HOME}/bin/functions
-#eval $(git config -l | grep alias | sed -e 's/^alias\./alias g/;s/=/="/;s/$/"/')
+set -ex
+eval $(git config -l | grep alias | sed -e 's/^alias\./alias g/;s/=/="/;s/$/"/' || true)
+unset -ex
