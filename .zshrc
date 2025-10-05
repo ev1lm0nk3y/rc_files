@@ -1,10 +1,6 @@
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
-[ -f ~/.p10k.zsh ] || source ~/.p10k.zsh
 
 export PATH="${HOME}/bin:${HOME}/go/bin:/opt/homebrew/bin:/opt/homebrew/Cellar:${PATH}"
 
@@ -15,6 +11,7 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # # Homebrew completions
 if type brew &>/dev/null; then
   FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
+
   autoload -Uz compinit
   compinit
 fi
@@ -28,12 +25,7 @@ fi
 # Case-sensitive completion must be off. _ and - will be interchangeable.
 # HYPHEN_INSENSITIVE="true"
 
-# Uncomment one of the following lines to change the auto-update behavior
-# zstyle ':omz:update' mode disabled  # disable automatic updates
 zstyle ':omz:update' mode auto      # update automatically without asking
-# zstyle ':omz:update' mode reminder  # just remind me to update when it's time
-
-# Uncomment the following line to change how often to auto-update (in days).
 zstyle ':omz:update' frequency 13
 
 # Uncomment the following line if pasting URLs and other text is messed up.
@@ -42,50 +34,17 @@ zstyle ':omz:update' frequency 13
 # Uncomment the following line to disable colors in ls.
 # DISABLE_LS_COLORS="true"
 
-# Uncomment the following line to disable auto-setting terminal title.
-# DISABLE_AUTO_TITLE="true"
-
-# Uncomment the following line to enable command auto-correction.
-# ENABLE_CORRECTION="true"
-
-# Uncomment the following line to display red dots whilst waiting for completion.
-# You can also set it to another string to have that shown instead of the default red dots.
-# e.g. COMPLETION_WAITING_DOTS="%F{yellow}waiting...%f"
-# Caution: this setting can cause issues with multiline prompts in zsh < 5.7.1 (see #5765)
-# COMPLETION_WAITING_DOTS="true"
-
-# Uncomment the following line if you want to disable marking untracked files
-# under VCS as dirty. This makes repository status check for large repositories
-# much, much faster.
-# DISABLE_UNTRACKED_FILES_DIRTY="true"
-
-# Uncomment the following line if you want to change the command execution time
-# stamp shown in the history command output.
-# You can set one of the optional three formats:
-# "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
-# or set a custom format using the strftime function format specifications,
-# see 'man strftime' for details.
+DISABLE_AUTO_TITLE="true"
 HIST_STAMPS="yyyy-mm-dd"
 
-# Would you like to use another custom folder than $ZSH/custom?
-# ZSH_CUSTOM=/path/to/new-custom-folder
-
-# Which plugins would you like to load?
-# Standard plugins can be found in $ZSH/plugins/
-# Custom plugins may be added to $ZSH_CUSTOM/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
-EXTRA_PLUGINS=""
-[ which terraform &>/dev/null ] && EXTRA_PLUGINS="${EXTRA_PLUGINS} terraform"
-[ which kubectl &>/dev/null ] && EXTRA_PLUGINS="${EXTRA_PLUGINS} kubectl"
-plugins=(colorize common-aliases git git-extras fzf vi-mode zsh-navigation-tools ${EXTRA_PLUGINS})
+plugins=(colorize common-aliases git git-extras fzf kubectl terraform vi-mode zsh-navigation-tools)
 
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
-[ which brew &>/dev/null ] && export HAS_BREW=1
+export HOMEBREW_NO_ENV_HINTS=true
 
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
@@ -118,35 +77,22 @@ export GOPATH="${HOME}/go"
 # Completions
 autoload -U compinit && compinit
 
-[ $EXTRA_PLUGINS =~ "kubectl" ] && compdef k="kubectl"
-[ $EXTRA_PLUGINS =~ "terraform" ] && compdef tf="terraform"
-[ which aws &>/dev/null ] && compdef a="aws"
+compdef k="kubectl"
+compdef tf="terraform"
+compdef a="aws"
+
+[ -f ~/.p10k.zsh ] && source ~/.p10k.zsh
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # GCloud things
-if [[ $HAS_BREW = "1" ]]; then
-  export HOMEBREW_NO_ENV_HINTS=true
-  export PATH="/opt/homebrew/opt/curl/bin:$PATH"
-
-  # Created by `pipx` on 2024-05-16 07:24:46
-  export PATH="$PATH:/Users/ryanshatford/.local/bin"
-  export PATH="/opt/homebrew/bin:$PATH"
-
-  [ -f "$(brew --prefix)/bin/kubectl-krew" ] && export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
-
-  # nvm setup
-  export NVM_DIR="$HOME/.nvm"
-  [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
-  [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
-
-  if [ -f "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc" ]; then
-    export CLOUDSDK_PYTHON_SITEPACKAGES=1
-    export CLOUDSDK_PYTHON="$(brew --prefix)/opt/python@3.11/bin/python3"
-    export CLOUDSDK_ACTIVE_CONFIG_NAME="default"
-    source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
-    source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
-  fi
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+if [ -d "$(brew --prefix)/share/google-cloud-sdk" ]; then
+  export CLOUDSDK_PYTHON_SITEPACKAGES=1
+  export CLOUDSDK_PYTHON="$(brew --prefix)/opt/python@3.11/bin/python3"
+  export CLOUDSDK_ACTIVE_CONFIG_NAME="default"
+  export CLOUDSDK_CORE_DISABLE_PROMPTS=1
+  source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
+  source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
+fi
 
 setopt autopushd
 setopt pushdignoredups
@@ -166,10 +112,28 @@ fi
 unset __conda_setup
 # <<< conda initialize <<<
 
+export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+export PATH="/opt/homebrew/opt/curl/bin:$PATH"
+
+# Created by `pipx` on 2024-05-16 07:24:46
+export PATH="$PATH:/Users/ryanshatford/.local/bin"
+export PATH="/opt/homebrew/bin:$PATH"
+
+# nvm setup
+export NVM_DIR="$HOME/.nvm"
+[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
+[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
+
 export PATH="/Users/ryanshatford/.cargo/bin:/Users/ryanshatford/.local/bin:$PATH"
 
 ## Custom functions
-[ -s "${HOME}/bin/functions" ] && source ${HOME}/bin/functions
-set -ex
-eval $(git config -l | grep alias | sed -e 's/^alias\./alias g/;s/=/="/;s/$/"/' || true)
-unset -ex
+[ -f "${HOME}/bin/functions" ] && source ${HOME}/bin/functions
+eval $(git config -l | grep alias | sed -e 's/^alias\./alias g/;s/=/="/;s/$/"/') 2>/dev/null || true
+# The following lines have been added by Docker Desktop to enable Docker CLI completions.
+fpath=(/Users/ryanshatford/.docker/completions $fpath)
+autoload -Uz compinit
+compinit
+# End of Docker CLI completions
+
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh" || true
+

@@ -1,5 +1,6 @@
-set colorcolumn=80
-set tabstop=2
-set softtabstop=2
-set shiftwidth=2
-set expandtab
+vim.o.colorcolumn = 100
+vim.o.cursorline = true
+vim.o.tabstop = 4
+vim.o.softtabstop = 4
+vim.o.shiftwidth = 1
+vim.o.expandtab = true

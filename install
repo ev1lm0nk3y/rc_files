@@ -47,3 +47,20 @@ pre-commit autoupdate && pre-commit install --install-hooks
 [ -f "/workspaces/${DEVPOD_WORKSPACE_ID}/.secrets.baseline" ] || \
   detect-secrets scan --all-files > /workspaces/${DEVPOD_WORKSPACE_ID}/.secrets.baseline
 
+define -A dotfiles
+dotfiles=(
+  ".zshrc"
+  ".oh-my-zsh"
+  ".vimrc"
+  ".gitconfig"
+  ".p10k.zsh"
+  ".terraformrc"
+  ".tmux.conf"
+)
+
+for df in "$dotfiles[@]"; do
+  echo "Copying dotfile/dotdir ${df}"
+  cp -r "${df}" "${HOME}/"
+done
+
+[ -d "./nvim" ] && cp -r ./nvim "${HOME}/.config/"
