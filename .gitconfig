@@ -29,10 +29,11 @@
   cam = commit -a -m
   m = commit --amend --verbose
   can = commit --amend --no-edit
+  cap = "!git commit --amend --no-edit . && git push origin --force"
 
   p = push
   po = push --set-upstream origin
-  pof = "!git can $(git rev-parse --show-toplevel) && git push origin --force"
+  pof = "!git commit --amend --no-edit $(git rev-parse --show-toplevel) && git push origin --force"
 
   pl = pull --ff
   plo = pull --ff origin main
@@ -54,6 +55,7 @@
   cb = checkout -b
   com = "!git co main && git pl"
   cos = "!git co staging && git pl"
+  cod = "!git co develop && git pl"
 
   br = branch --sort=-creatordate
   # list branches sorted by last modified
@@ -68,6 +70,10 @@
   rs = rebase --skip
   ru = "!git status -s --ignore-submodules | grep -E \"^ [DAU]U \" | awk '{print $2}'"
 
+  # revert and rollback
+  rl = reflog
+  rb = reset --soft HEAD~1
+
 [pull]
  	rebase = true
   ff = true
@@ -81,9 +87,14 @@
 [core]
  	editor = nvim
 [pager]
-  cmd = "less -LFQm --use-color"
+  cmd = "!most -d -t2"
 [pack]
  	windowMemory = 100m
  	packSizeLimit = 100m
  	threads = 1
  	deltaCacheSize = 512m
+[credential "git@github.com"]
+  username = ev1lm0nk3y
+[credential "https://github.com"]
+  username = ev1lm0nk3y
+

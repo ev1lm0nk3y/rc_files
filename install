@@ -10,11 +10,14 @@ packages=(
   "bat"
   "fzf"
   "jq"
+  "most"
   "pipx"
   "ripgrep"
   "tmux"
   "tree"
   "wget"
+  "uv"
+  "zsh"
 )
 
 if [ -z "${PKGMGR}" ]; then
@@ -42,7 +45,7 @@ pipx_installs=(
 pipx install "${pipx_installs[@]}"
 echo "Ensuring workspace id ${DEVPOD_WORKSPACE_ID} is protected by detect-secrets"
 [ -f "/workspaces/${DEVPOD_WORKSPACE_ID}/.pre-commit-config.yaml" ] || \
-  cp /home/vscode/dotfiles/.pre-commit-config.yaml /workspaces/${DEVPOD_WORKSPACE_ID}
+  cp /home/${USER}/dotfiles/.pre-commit-config.yaml /workspaces/${DEVPOD_WORKSPACE_ID}
 pre-commit autoupdate && pre-commit install --install-hooks
 [ -f "/workspaces/${DEVPOD_WORKSPACE_ID}/.secrets.baseline" ] || \
   detect-secrets scan --all-files > /workspaces/${DEVPOD_WORKSPACE_ID}/.secrets.baseline
