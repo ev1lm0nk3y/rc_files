@@ -5,30 +5,17 @@
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" && \
   export PKGMGR=brew
 
-define -A packages
-packages=(
-  "bat"
-  "fzf"
-  "jq"
-  "most"
-  "pipx"
-  "ripgrep"
-  "tmux"
-  "tree"
-  "wget"
-  "uv"
-  "zsh"
-)
+packages="bat fzf jq most pipx ripgrep tmux tree wget zsh"
 
 if [ -z "${PKGMGR}" ]; then
   echo "Unsupported OS. Please install Homebrew or apt."
   exit 1
 elif [ "${PKGMGR}" = "apt" ]; then
-  sudo "${PKGMGR}" install -y "${packages[@]}" || {
+  sudo "${PKGMGR}" install -y --no-install-recommends "${packages}" || {
     echo "Failed to install some packages with ${PKGMGR}."
   }
 elif [ "${PKGMGR}" = "brew" ]; then
-  ${PKGMGR} install "${packages[@]}" || {
+  ${PKGMGR} install "${packages}" || {
     echo "Failed to install some packages with ${PKGMGR}."
   }
 fi
@@ -36,34 +23,22 @@ fi
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
 source ~/.zshrc
 
-define -A pipx_installs
-pipx_installs=(
-  "pre-commit"
-  "detect-secrets"
-)
+pipx_installs="pre-commit detect-secrets"
 
-pipx install "${pipx_installs[@]}"
+pipx install "${pipx_installs}"
 echo "Ensuring workspace id ${DEVPOD_WORKSPACE_ID} is protected by detect-secrets"
-[ -f "/workspaces/${DEVPOD_WORKSPACE_ID}/.pre-commit-config.yaml" ] || \
-  cp /home/${USER}/dotfiles/.pre-commit-config.yaml /workspaces/${DEVPOD_WORKSPACE_ID}
+[ -f "/workspaces/${DEVPOD_WORKSPACE_NAME}/.pre-commit-config.yaml" ] || \
+  cp /home/${USER}/dotfiles/.pre-commit-config.yaml /workspaces/${DEVPOD_WORKSPACE_NAME}
 pre-commit autoupdate && pre-commit install --install-hooks
-[ -f "/workspaces/${DEVPOD_WORKSPACE_ID}/.secrets.baseline" ] || \
-  detect-secrets scan --all-files > /workspaces/${DEVPOD_WORKSPACE_ID}/.secrets.baseline
+[ -f "/workspaces/${DEVPOD_WORKSPACE_NAME}/.secrets.baseline" ] || \
+  detect-secrets scan --all-files > /workspaces/${DEVPOD_WORKSPACE_NAME}/.secrets.baseline
 
-define -A dotfiles
-dotfiles=(
-  ".zshrc"
-  ".oh-my-zsh"
-  ".vimrc"
-  ".gitconfig"
-  ".p10k.zsh"
-  ".terraformrc"
-  ".tmux.conf"
-)
+dotfiles=".zshrc .oh-my-zsh .vimrc .gitconfig .p10k.zsh .terraformrc .tmux.conf"
 
 for df in "$dotfiles[@]"; do
   echo "Copying dotfile/dotdir ${df}"
-  cp -r "${df}" "${HOME}/"
+  cp -r "dotfiles/${df}" "${HOME}/"
 done
 
+mkdir -p "${HOME}/.config/"
 [ -d "./nvim" ] && cp -r ./nvim "${HOME}/.config/"
