@@ -2,17 +2,23 @@
 	email = ev1lm0nk3y@users.noreply.github.com
 	name = Ryan Shatford
 [diff]
-  tool = less
-[difftool "less"]
-  cmd = colorize_less
+  tool = nvim
+[difftool "nvim"]
+  cmd = nvim -f -c "Gdiifsplit!" "$LOCAL" "$REMOTE"
+[mergetool "nvim"]
+  cmd = nvim -f -c "Gdiffsplit!" "$MERGED"
+  layout = "(LOCAL,BASE,REMOTE)/MERGED"
 [merge]
   tool = nvim
-  ff = only
-[mergetool "nvimdiff"]
-  layout = "(LOCAL,BASE,REMOTE)/MERGED"
+  ff = true
+[mergetool]
+  prompt = false
 [git]
   lineNumber = true
   column = true
+[pull]
+ 	rebase = true
+  ff = true
 [push]
   autoSetupRemote = true
 [alias]
@@ -26,7 +32,7 @@
   c = commit --verbose
   ca = commit -a --verbose
   cm = commit -m
-  cam = commit -a -m
+  cam = commit -am
   m = commit --amend --verbose
   can = commit --amend --no-edit
   cap = "!git commit --amend --no-edit . && git push origin --force"
@@ -35,13 +41,14 @@
   po = push --set-upstream origin
   pof = "!git commit --amend --no-edit $(git rev-parse --show-toplevel) && git push origin --force"
 
-  pl = pull --ff
-  plo = pull --ff origin main
-  plom = pull --ff origin master
+  pl = pull
+  plo = pull origin main
+  plom = pull origin master
     
   df = diff
   ds = diff --stat
   dc = diff --cached
+  mt = mergetool
 
   root = rev-parse --show-toplevel
 
@@ -70,13 +77,11 @@
   rs = rebase --skip
   ru = "!git status -s --ignore-submodules | grep -E \"^ [DAU]U \" | awk '{print $2}'"
 
-  # revert and rollback
-  rl = reflog
+  # revert, restore and rollback
+  rl = reflog --pretty=format:"%C(yellow)%h\\ %ad%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --date=short --parents
   rb = reset --soft HEAD~1
+  unstage = restore --staged
 
-[pull]
- 	rebase = true
-  ff = true
 [filter "lfs"]
  	required = true
  	clean = git-lfs clean -- %f
@@ -85,9 +90,8 @@
 [init]
  	defaultBranch = main
 [core]
- 	editor = nvim
-[pager]
-  cmd = "!most -d -t2"
+  editor = nvim
+  pager = most -dwt2 +s
 [pack]
  	windowMemory = 100m
  	packSizeLimit = 100m
