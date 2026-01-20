@@ -5,13 +5,13 @@
   tool = nvim
 [difftool "nvim"]
   cmd = nvim -f -c "Gdiifsplit!" "$LOCAL" "$REMOTE"
-[mergetool "nvim"]
-  cmd = nvim -f -c "Gdiffsplit!" "$MERGED"
-  layout = "(LOCAL,BASE,REMOTE)/MERGED"
+  prompt = false
 [merge]
   tool = nvim
   ff = true
-[mergetool]
+[mergetool "nvim"]
+  cmd = nvim -f -c "Gdiffsplit!" "$MERGED"
+  layout = "(LOCAL,BASE,REMOTE)/MERGED"
   prompt = false
 [git]
   lineNumber = true
@@ -49,6 +49,9 @@
   ds = diff --stat
   dc = diff --cached
   mt = mergetool
+  dt = difftool
+  dts = dt --stat
+  dtc = dt --cached
 
   root = rev-parse --show-toplevel
 
