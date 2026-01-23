@@ -1,21 +1,66 @@
 #!/usr/bin/env bash
 
+function krew_install() {
+  set -x; cd "$(mktemp -d)" &&
+  OS="$(uname | tr '[:upper:]' '[:lower:]')" &&
+  ARCH="$(uname -m | sed -e 's/x86_64/amd64/' -e 's/\(arm\)\(64\)\?.*/\1\2/' -e 's/aarch64$/arm64/')" &&
+  KREW="krew-${OS}_${ARCH}" &&
+  curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/${KREW}.tar.gz" &&
+  tar zxvf "${KREW}.tar.gz" &&
+  ./"${KREW}" install krew
+  echo "export PATH=\"${KREW_ROOT:-$HOME/.krew}/bin:$PATH\"" >> ~/.zshrc
+}
+
+# Make sure to install zsh, oh-my-zsh and p10k before continuing
+function zsh_init() {
+  [ zsh --version ] || {
+    echo "Installing zsh"
+    sudo apt install -y zsh
+  }
+  [ oh-my-zsh --version ] || {
+    echo "Installing oh-my-zsh"
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+  }
+  [ p10k --version ] || {
+    echo "Installing p10k"
+    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
+  }
+}
+
 [ $(uname) = "Linux" ] && apt update && export PKGMGR=apt
-[ $(uname) = "Darwin" ] && \
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" && \
+[ $(uname) = "Darwin" ]] && {
+  xcode-select --install
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   export PKGMGR=brew
+}
 
 declare -a packages=(
+  1password-cli
+  awscli
   bat
+  cmake
+  compdef
+  fluxcd/tap/flux
   fzf
+  golang
   jq
+  k9s
+  kubernetes-cli
+  kubectx
   most
+  neovim
+  npm
   pipx
+  pyenv
   ripgrep
+  stern
+  tfenv
+  thefuck
   tmux
   tree
   wget
-  zsh
+  yq
+  zed
 )
 
 if [ -z "${PKGMGR}" ]; then
@@ -31,14 +76,34 @@ elif [ "${PKGMGR}" = "brew" ]; then
   }
 fi
 
-git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
-
 declare -a pipx_installs=(
   pre-commit
+  pygments
   detect-secrets
 )
+[ pipx --version ] && pipx install "${pipx_installs[@]}"
 
-pipx install "${pipx_installs[@]}"
+declare -a npm_packages=(
+  "@google/gemini-cli"
+)
+
+for npm_package in "${npm_packages[@]}"; do
+  npm install -g "${npm_package}"
+done
+
+declare -a krew_packages=(
+  crd-wizard
+  datadog
+  debug-shell
+  get-all
+  secretdata
+  tmux-exec
+  wild
+)
+
+for krew_package in "${krew_packages[@]}"; do
+  krew install "${krew_package}"
+done
 
 if [ -d "/workspaces/${DEVPOD_WORKSPACE_ID}" ]; then
   cd "/workspaces/${DEVPOD_WORKSPACE_ID}" || exit
@@ -53,12 +118,12 @@ if [ -d "/workspaces/${DEVPOD_WORKSPACE_ID}" ]; then
     detect-secrets scan --all-files > /workspaces/${DEVPOD_WORKSPACE_NAME}/.secrets.baseline
 
 declare -a dotfiles=(
-  .zshrc
-  .oh-my-zsh
   .gitconfig
+  .oh-my-zsh
   .p10k.zsh
   .terraformrc
   .tmux.conf
+  .zshrc
 )
 
 for df in "$dotfiles[@]"; do
@@ -68,5 +133,6 @@ done
 
 source "${HOME}/.zshrc"
 
+echo "Copying nvim config"
 mkdir -p "${HOME}/.config/"
-[ -d "./nvim" ] && cp -r ./nvim "${HOME}/.config/"
+[ -d "./nvim" ] && cp -r ./nvim ${HOME}/.config/

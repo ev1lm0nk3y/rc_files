@@ -37,7 +37,7 @@ zstyle ':omz:update' frequency 13
 DISABLE_AUTO_TITLE="true"
 HIST_STAMPS="yyyy-mm-dd"
 
-plugins=(colorize common-aliases git git-extras fzf kubectl terraform vi-mode zsh-navigation-tools)
+plugins=(1password colorize common-aliases git git-extras fluxcd fzf kubectl k9s terraform vi-mode zsh-navigation-tools)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -136,4 +136,3 @@ compinit
 # End of Docker CLI completions
 
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh" || true
-
